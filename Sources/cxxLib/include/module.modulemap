@@ -1,0 +1,4 @@
+module cxxLib {
+    umbrella header "cxxLib.hpp"
+    export *
+}
