@@ -28,15 +28,15 @@ inline void swift_release(T* object) {
 
 template<class T>
 class SwiftSharedBase : public std::enable_shared_from_this<T> {
-    unsigned int m_swift_ref_count = 0;
+    std::atomic<unsigned> m_swift_ref_count = 0;
     std::optional<std::shared_ptr<T>> m_swift_lock = std::nullopt;
 public:
     inline void swift_retain() {
-        assert(("Ref count overflow", m_swift_ref_count < std::numeric_limits<unsigned int>::max()));
+        assert(m_swift_ref_count < std::numeric_limits<unsigned>::max() && "Ref count overflow");
         m_swift_ref_count += 1;
         
         if (!m_swift_lock) {
-            m_swift_lock = std::enable_shared_from_this<T> :: shared_from_this();
+            m_swift_lock = this->shared_from_this();
         }
     }
     
